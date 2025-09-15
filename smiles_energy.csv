@@ -1,0 +1,9 @@
+mol_id,smiles,absorption_energy,emission_energy
+bp,O=C(c1ccccc1)c1ccccc1,4.609078009,2.952004725
+dfbp,O=C(c1ccc(F)cc1)c1ccc(F)cc1,4.787034689,3.031398495
+dcbp,O=C(c1ccc(Cl)cc1)c1ccc(Cl)cc1,4.661060091,2.944992837
+dbbp,O=C(c1ccc(Br)cc1)c1ccc(Br)cc1,4.626276061,2.896827066
+bbp,O=C(c1ccccc1)c1ccc(Br)cc1,4.714228077,2.944992837
+abp,Nc1ccccc1C(=O)c1ccccc1,5.25356773,2.588396627
+mbb,COC(=O)c1ccccc1,5.102230388,3.668171551
+dbbp2,Brc1ccc(-c2ccc(Br)cc2)cc1,4.609078009,2.583004134
