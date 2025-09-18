@@ -12,11 +12,25 @@ import pandas as pd
 IPythonConsole.ipython_3d = True
 
 CHARGE = 0
-METHOD = 'b3lyp'
-BASIS = 'def2-svp'
-psi4_calc_singlet = Psi4(method=METHOD, basis=BASIS, charge=CHARGE, multiplicity=1)
+METHOD = 'wb97m-v'
+BASIS = 'def2-tzvppd'
+additional_options = {
+        'scf_type': 'df',
+        'df_basis_scf': 'def2-universal-jkfit',
+        'e_convergence': 1e-8,
+        'd_convergence': 1e-8,
+        'dft_radial_points': 99,
+        'dft_spherical_points': 590,
+        'dft_pruning_scheme': 'robust',
+    }
+psi4_calc_singlet = Psi4(method=METHOD, basis=BASIS, charge=CHARGE,
+        multiplicity=1, reference = 'rks',
+        num_threads = 'max', memory = '30 GB')
+psi4_calc_singlet.psi4.set_options(additional_options)
 psi4_calc_triplet = Psi4(method=METHOD, basis=BASIS, charge=CHARGE,
-                  multiplicity=3, reference='uks')
+                  multiplicity=3, reference='uks',
+                  num_threads = 'max', memory = '30 GB')
+psi4_calc_triplet.psi4.set_options(additional_options)
 tblite_calc_singlet = TBLite(multiplicity=1)
 tblite_calc_triplet = TBLite(multiplicity=3)
 gamess_calc_singlet = GAMESSUS(contrl={'mult': 1}, label='molecule',
