@@ -47,7 +47,7 @@ except FileExistsError:
 m_id = 'abp'
 abp_smile = "Nc1ccccc1C(=O)c1ccccc1"
 
-def optimize_geometry(mol_id, smile, calc_tiplet):
+def optimize_geometry(mol_id, smile, calc_triplet):
     geom_path = os.path.join(geom_dir_name, f'{mol_id}.xyz')
     # First, check if there's already a geometry saved, and if so, just load it
     if os.path.exists(geom_path):
@@ -65,7 +65,7 @@ def optimize_geometry(mol_id, smile, calc_tiplet):
         for char in atom_mol:
             atom_sym.append(char.GetSymbol())
         atom = Atoms(atom_sym, positions=pos_mol)
-        atom.calc = calc_tiplet
+        atom.calc = calc_triplet
         opt = BFGS(atom, logfile=None, trajectory=None)
         opt.run(fmax=0.05)
         ase.io.write(filename=geom_path, images=atom)
@@ -85,5 +85,5 @@ def st_gap_calculate(path, calc_singlet, calc_triplet):
     print(diff_energy)
 
 # Test using abp.xyz
-optimize_geometry(mol_id=m_id, smile=abp_smile, calc_tiplet=tblite_calc_triplet)
+optimize_geometry(mol_id=m_id, smile=abp_smile, calc_triplet=tblite_calc_triplet)
 st_gap_calculate(path="new_organic_phos_geometries/abp.xyz", calc_singlet=tblite_calc_singlet, calc_triplet=tblite_calc_triplet)
