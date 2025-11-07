@@ -49,8 +49,7 @@ except FileExistsError:
 test_mol_id = 'abp'
 test_smile = "Nc1ccccc1C(=O)c1ccccc1"
 
-def optimize_geometry(mol_id, smile, calc_triplet):
-    geom_path = os.path.join(geom_dir_name, f'{mol_id}.xyz')
+def optimize_geometry(geom_path, mol_id, smile, calc_triplet):
     # First, check if there's already a geometry saved, and if so, just load it
     if os.path.exists(geom_path):
         atom = ase.io.read(filename=geom_path)
@@ -88,6 +87,7 @@ def st_gap_calculate(path, calc_singlet, calc_triplet):
 
 # Test using abp.xyz
 if __name__ == "__main__":
-    optimize_geometry(mol_id=test_mol_id, smile=test_smile, calc_triplet=tblite_calc_triplet)
+    geom_path = os.path.join(geom_dir_name, f'{test_mol_id}.xyz')
+    optimize_geometry(geom_path=geom_path, mol_id=test_mol_id, smile=test_smile, calc_triplet=tblite_calc_triplet)
     st_gap = st_gap_calculate(path=f"new_organic_phos_geometries/{test_mol_id}.xyz", calc_singlet=tblite_calc_singlet, calc_triplet=tblite_calc_triplet)
     print(st_gap)
