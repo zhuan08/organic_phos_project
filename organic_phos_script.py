@@ -23,13 +23,15 @@ additional_options = {
         'dft_spherical_points': 590,
         'dft_pruning_scheme': 'robust',
     }
+nthreads = 1
+memory = '90 GB'
 psi4_calc_singlet = Psi4(method=METHOD, basis=BASIS, charge=CHARGE,
-        multiplicity=1, reference = 'rks',
-        num_threads = 'max', memory = '30 GB')
+        multiplicity=1, reference = 'uks',
+        num_threads = nthreads, memory = memory)
 psi4_calc_singlet.psi4.set_options(additional_options)
 psi4_calc_triplet = Psi4(method=METHOD, basis=BASIS, charge=CHARGE,
                   multiplicity=3, reference='uks',
-                  num_threads = 'max', memory = '30 GB')
+                  num_threads = nthreads, memory = memory)
 psi4_calc_triplet.psi4.set_options(additional_options)
 tblite_calc_singlet = TBLite(multiplicity=1)
 tblite_calc_triplet = TBLite(multiplicity=3)
@@ -82,9 +84,10 @@ def st_gap_calculate(path, calc_singlet, calc_triplet):
             atom.calc = calc_triplet
             energy = atom.get_potential_energy()
             diff_energy += energy
-    print(diff_energy)
+    return(diff_energy)
 
 # Test using abp.xyz
 if __name__ == "__main__":
     optimize_geometry(mol_id=m_id, smile=abp_smile, calc_triplet=tblite_calc_triplet)
-    st_gap_calculate(path="new_organic_phos_geometries/abp.xyz", calc_singlet=tblite_calc_singlet, calc_triplet=tblite_calc_triplet)
+    st_gap = st_gap_calculate(path="new_organic_phos_geometries/abp.xyz", calc_singlet=tblite_calc_singlet, calc_triplet=tblite_calc_triplet)
+    print(st_gap)
