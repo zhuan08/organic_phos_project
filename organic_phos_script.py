@@ -6,10 +6,8 @@ from tblite.ase import TBLite
 from ase.calculators.gamess_us import GAMESSUS
 from ase.calculators.psi4 import Psi4
 from rdkit import Chem
-from rdkit.Chem.Draw import IPythonConsole
 from rdkit.Chem import rdDistGeom
 import pandas as pd
-IPythonConsole.ipython_3d = True
 
 CHARGE = 0
 METHOD = 'wb97m-v'
@@ -22,16 +20,17 @@ additional_options = {
         'dft_radial_points': 99,
         'dft_spherical_points': 590,
         'dft_pruning_scheme': 'robust',
+        'maxiter': 1000
     }
-nthreads = 1
-memory = '90 GB'
+nthreads = 192
+memory = '767 GB'
 psi4_calc_singlet = Psi4(method=METHOD, basis=BASIS, charge=CHARGE,
-        multiplicity=1, reference = 'uks',
-        num_threads = nthreads, memory = memory)
+        multiplicity=1, reference='uks',
+        num_threads=nthreads, memory=memory)
 psi4_calc_singlet.psi4.set_options(additional_options)
 psi4_calc_triplet = Psi4(method=METHOD, basis=BASIS, charge=CHARGE,
                   multiplicity=3, reference='uks',
-                  num_threads = nthreads, memory = memory)
+                  num_threads=nthreads, memory=memory)
 psi4_calc_triplet.psi4.set_options(additional_options)
 tblite_calc_singlet = TBLite(multiplicity=1)
 tblite_calc_triplet = TBLite(multiplicity=3)
