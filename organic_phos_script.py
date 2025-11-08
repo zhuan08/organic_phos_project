@@ -20,12 +20,12 @@ additional_options = {
         'dft_radial_points': 99,
         'dft_spherical_points': 590,
         'dft_pruning_scheme': 'robust',
-        'maxiter': 1000
+        'maxiter': 150
     }
 nthreads = 192
 memory = '767 GB'
 psi4_calc_singlet = Psi4(method=METHOD, basis=BASIS, charge=CHARGE,
-        multiplicity=1, reference='uks',
+        multiplicity=1, reference='rks',
         num_threads=nthreads, memory=memory)
 psi4_calc_singlet.psi4.set_options(additional_options)
 psi4_calc_triplet = Psi4(method=METHOD, basis=BASIS, charge=CHARGE,
