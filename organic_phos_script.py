@@ -66,12 +66,12 @@ def optimize_geometry(geom_path, mol_id, smile, calc_triplet):
             atom_sym.append(char.GetSymbol())
         atom = Atoms(atom_sym, positions=pos_mol)
         atom.calc = calc_triplet
-        opt = BFGS(atom, logfile=None, trajectory=None)
+        opt = BFGS(atom, logfile=f'{mol_id}.opt', trajectory=f'{mol_id}.traj')
         opt.run(fmax=0.05)
         ase.io.write(filename=geom_path, images=atom)
+    return atom
 
-def st_gap_calculate(path, calc_singlet, calc_triplet):
-    atom = ase.io.read(filename=path)
+def st_gap_calculate(atom, calc_singlet, calc_triplet):
     diff_energy = 0
     for multiplicity in ['singlet', 'triplet']:
         if multiplicity == 'singlet':
@@ -87,6 +87,6 @@ def st_gap_calculate(path, calc_singlet, calc_triplet):
 # Test using abp.xyz
 if __name__ == "__main__":
     geom_path = os.path.join(geom_dir_name, f'{test_mol_id}.xyz')
-    optimize_geometry(geom_path=geom_path, mol_id=test_mol_id, smile=test_smile, calc_triplet=tblite_calc_triplet)
-    st_gap = st_gap_calculate(path=f"new_organic_phos_geometries/{test_mol_id}.xyz", calc_singlet=tblite_calc_singlet, calc_triplet=tblite_calc_triplet)
+    atom = optimize_geometry(geom_path=geom_path, mol_id=test_mol_id, smile=test_smile, calc_triplet=tblite_calc_triplet)
+    st_gap = st_gap_calculate(atom, calc_singlet=tblite_calc_singlet, calc_triplet=tblite_calc_triplet)
     print(st_gap)
