@@ -25,7 +25,7 @@ def optimize_geometry(geom_path, mol_id, smile, calc_triplet):
         atom = Atoms(atom_sym, positions=pos_mol)
         atom.calc = calc_triplet
         opt = BFGS(atom, logfile=f'{mol_id}.opt', trajectory=f'{mol_id}.traj')
-        opt.run(fmax=0.05)
+        opt.run(fmax=0.02)
         ase.io.write(filename=geom_path, images=atom)
     return atom
 
