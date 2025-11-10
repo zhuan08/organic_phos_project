@@ -2,42 +2,47 @@ import os
 import ase.io
 from ase import Atoms
 from ase.optimize import BFGS
+from ase.calculators.orca import ORCA, OrcaProfile
 from tblite.ase import TBLite
-from ase.calculators.gamess_us import GAMESSUS
-from ase.calculators.psi4 import Psi4
 from rdkit import Chem
 from rdkit.Chem import rdDistGeom
-import pandas as pd
 
-CHARGE = 0
-METHOD = 'wb97m-v'
-BASIS = 'def2-tzvppd'
-additional_options = {
-        'scf_type': 'df',
-        'df_basis_scf': 'def2-universal-jkfit',
-        'e_convergence': 1e-8,
-        'd_convergence': 1e-8,
-        'dft_radial_points': 99,
-        'dft_spherical_points': 590,
-        'dft_pruning_scheme': 'robust',
-        'maxiter': 150
-    }
-nthreads = 192
-memory = '767 GB'
-psi4_calc_singlet = Psi4(method=METHOD, basis=BASIS, charge=CHARGE,
-        multiplicity=1, reference='rks',
-        num_threads=nthreads, memory=memory)
-psi4_calc_singlet.psi4.set_options(additional_options)
-psi4_calc_triplet = Psi4(method=METHOD, basis=BASIS, charge=CHARGE,
-                  multiplicity=3, reference='uks',
-                  num_threads=nthreads, memory=memory)
-psi4_calc_triplet.psi4.set_options(additional_options)
+# TBLITE CALCULATOR
 tblite_calc_singlet = TBLite(multiplicity=1)
 tblite_calc_triplet = TBLite(multiplicity=3)
-gamess_calc_singlet = GAMESSUS(contrl={'mult': 1}, label='molecule',
-                    command='rungms PREFIX.inp 30Jun2020R1 > PREFIX.log 2> PREFIX.err')
-gamess_calc_triplet = GAMESSUS(contrl={'mult': 3}, label='molecule',
-                    command='rungms PREFIX.inp 30Jun2020R1 > PREFIX.log 2> PREFIX.err')
+
+# ORCA CALCULATOR
+# Simple input line
+simpleinput = '{mode} wB97M-V def2-TZVPPD def2/J RIJCOSX DefGrid3 TightSCF EnGrad'
+singlet_simpleinput = simpleinput.format(mode='RKS')
+triplet_simpleinput = simpleinput.format(mode='UKS')
+
+# Blocks
+blocks = '''%pal
+  nprocs 192
+end
+
+%maxcore 3000
+
+%scf
+  MaxIter 150
+end'''
+
+# Orca directory is in the EBROOTORCA environment variable
+orca_dir_path = os.environ.get('EBROOTORCA')
+orca_exec_path = os.path.join(orca_dir_path, 'orca')
+profile = OrcaProfile(command=orca_exec_path)
+
+orca_singlet_calc = ORCA(
+        profile=profile,
+        orcasimpleinput=singlet_simpleinput,
+        orcablocks=blocks,
+        charge=0, mult=1)
+orca_triplet_calc = ORCA(
+        profile=profile,
+        orcasimpleinput=triplet_simpleinput,
+        orcablocks=blocks,
+        charge=0, mult=3)
 
 geom_dir_name = 'new_organic_phos_geometries'
 try:
@@ -54,7 +59,7 @@ def optimize_geometry(geom_path, mol_id, smile, calc_triplet):
         atom = ase.io.read(filename=geom_path)
     else:
         molecule = Chem.MolFromSmiles(smile)
-        if molecule is None: 
+        if molecule is None:
             raise ValueError(f'MolFromSmiles returned None on {mol_id}')
         molecule = Chem.AddHs(molecule)
         rdDistGeom.EmbedMolecule(molecule)
