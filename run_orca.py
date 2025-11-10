@@ -52,12 +52,16 @@ orca_calc_triplet = ORCA(
         directory=f'orca_triplet_{mol_id}',
         label=f'orca_triplet_{mol_id}',
         charge=0, mult=3)
+def orca_singlet_setup(atom):
+    atom.calc = orca_calc_singlet
+def orca_triplet_setup(atom):
+    atom.calc = orca_calc_triplet
 
 # RUN CALCULATION
 atom = optimize_geometry(geom_path = geom_path,
-        mol_id=mol_id, smile=smile, calc_triplet=orca_calc_triplet)
-st_gap = st_gap_calculate(atom, mol_id=mol_id,
-        calc_singlet=orca_calc_singlet, calc_triplet=orca_calc_triplet)
+        mol_id=mol_id, smile=smile, triplet_setup=orca_triplet_setup)
+st_gap = st_gap_calculate(atom,
+        singlet_setup=orca_singlet_setup, triplet_setup=orca_triplet_setup)
 outrow = [mol_id, float(st_gap)]
 
 # WRITE RESULTS
