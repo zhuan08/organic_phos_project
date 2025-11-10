@@ -40,7 +40,7 @@ def st_gap_calculate(atom, singlet_setup, triplet_setup):
             triplet_setup(atom)
             energy = atom.get_potential_energy()
             diff_energy += energy
-    return(diff_energy)
+    return diff_energy
 
 def tblite_singlet_setup(atom):
     atom.calc = TBLite(multiplicity = 1)
