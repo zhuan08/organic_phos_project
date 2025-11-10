@@ -2,7 +2,6 @@ import os
 import ase.io
 from ase import Atoms
 from ase.optimize import BFGS
-from ase.calculators.orca import ORCA, OrcaProfile
 from tblite.ase import TBLite
 from rdkit import Chem
 from rdkit.Chem import rdDistGeom
