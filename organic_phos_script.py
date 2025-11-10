@@ -24,7 +24,6 @@ def optimize_geometry(geom_path, mol_id, smile, calc_triplet):
             atom_sym.append(char.GetSymbol())
         atom = Atoms(atom_sym, positions=pos_mol)
         atom.calc = calc_triplet
-        atom.calc.set_label(f'{mol_id}_opt')
         opt = BFGS(atom, logfile=f'{mol_id}.opt', trajectory=f'{mol_id}.traj')
         opt.run(fmax=0.05)
         ase.io.write(filename=geom_path, images=atom)
@@ -35,12 +34,10 @@ def st_gap_calculate(atom, mol_id, calc_singlet, calc_triplet):
     for multiplicity in ['singlet', 'triplet']:
         if multiplicity == 'singlet':
             atom.calc = calc_singlet
-            atom.calc.set_label(f'{mol_id}_singlet')
             energy = atom.get_potential_energy()
             diff_energy -= energy
         if multiplicity == 'triplet':
             atom.calc = calc_triplet
-            atom.calc.set_label(f'{mol_id}_triplet')
             energy = atom.get_potential_energy()
             diff_energy += energy
     return(diff_energy)
