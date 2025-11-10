@@ -7,52 +7,6 @@ from tblite.ase import TBLite
 from rdkit import Chem
 from rdkit.Chem import rdDistGeom
 
-# TBLITE CALCULATOR
-tblite_calc_singlet = TBLite(multiplicity=1)
-tblite_calc_triplet = TBLite(multiplicity=3)
-
-# ORCA CALCULATOR
-# Simple input line
-simpleinput = '{mode} wB97M-V def2-TZVPPD def2/J RIJCOSX DefGrid3 TightSCF EnGrad'
-singlet_simpleinput = simpleinput.format(mode='RKS')
-triplet_simpleinput = simpleinput.format(mode='UKS')
-
-# Blocks
-blocks = '''%pal
-  nprocs 192
-end
-
-%maxcore 3000
-
-%scf
-  MaxIter 150
-end'''
-
-# Orca directory is in the EBROOTORCA environment variable
-orca_dir_path = os.environ.get('EBROOTORCA')
-orca_exec_path = os.path.join(orca_dir_path, 'orca')
-profile = OrcaProfile(command=orca_exec_path)
-
-orca_singlet_calc = ORCA(
-        profile=profile,
-        orcasimpleinput=singlet_simpleinput,
-        orcablocks=blocks,
-        charge=0, mult=1)
-orca_triplet_calc = ORCA(
-        profile=profile,
-        orcasimpleinput=triplet_simpleinput,
-        orcablocks=blocks,
-        charge=0, mult=3)
-
-geom_dir_name = 'new_organic_phos_geometries'
-try:
-    os.mkdir(geom_dir_name)
-except FileExistsError:
-    pass
-
-test_mol_id = 'abp'
-test_smile = "Nc1ccccc1C(=O)c1ccccc1"
-
 def optimize_geometry(geom_path, mol_id, smile, calc_triplet):
     # First, check if there's already a geometry saved, and if so, just load it
     if os.path.exists(geom_path):
@@ -94,7 +48,19 @@ def st_gap_calculate(atom, mol_id, calc_singlet, calc_triplet):
 
 # Test using abp.xyz
 if __name__ == "__main__":
-    geom_path = os.path.join(geom_dir_name, f'{test_mol_id}.xyz')
+    geom_dir_name = 'new_organic_phos_geometries'
+    try:
+        os.mkdir(geom_dir_name)
+    except FileExistsError:
+        pass
+
+    test_mol_id = 'abp'
+    test_smile = "Nc1ccccc1C(=O)c1ccccc1"
+
+    tblite_calc_singlet = TBLite(multiplicity=1)
+    tblite_calc_triplet = TBLite(multiplicity=3)
+
+    geom_path = os.path.join(geom_dir_name, f'tblite_{test_mol_id}.xyz')
     atom = optimize_geometry(geom_path=geom_path, mol_id=test_mol_id, smile=test_smile, calc_triplet=tblite_calc_triplet)
     st_gap = st_gap_calculate(atom, mol_id=test_mol_id, calc_singlet=tblite_calc_singlet, calc_triplet=tblite_calc_triplet)
     print(st_gap)
